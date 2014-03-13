@@ -7,59 +7,67 @@
 <html>
 
 <head>
-<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
-<title>Checkerboard</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <title>Checkerboard</title>
 
-<!-- Load style sheets -->
-<link rel="stylesheet" type="text/css" href="mainLayout.css" />
+    <!-- Load style sheets -->
+    <link rel="stylesheet" type="text/css" href="mainLayout.css" />
 
-<!-- Load any supplemental Javascript libraries here -->
-<script type="text/javascript" src="external_js/jquery-1.9.0.min.js"></script>
-<script type="text/javascript" src="checker.js"></script>
-<script type="text/javascript" src="boardEvent.js"></script>
-<script type="text/javascript" src="board.js"></script>
-<script type="text/javascript" src="rules.js"></script>
+    <!-- Load any supplemental Javascript libraries here -->
+    <script type="text/javascript" src="external_js/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="checker.js"></script>
+    <script type="text/javascript" src="boardEvent.js"></script>
+    <script type="text/javascript" src="board.js"></script>
+    <script type="text/javascript" src="rules.js"></script>
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
 //This script extracts parameters from the URL
 //from jquery-howto.blogspot.com
 
-    $.extend({
-        getUrlVars : function() {
-            var vars = [], hash;
-            var hashes = window.location.href.slice(
-                    window.location.href.indexOf('?') + 1).split('&');
-            for ( var i = 0; i < hashes.length; i++) {
-                hash = hashes[i].split('=');
-                vars.push(hash[0]);
-                vars[hash[0]] = hash[1];
-            }
-            return vars;
-        },
-        getUrlVar : function(name) {
-            return $.getUrlVars()[name];
+$.extend({
+    getUrlVars : function() {
+        var vars = [], hash;
+        var hashes = window.location.href.slice(
+            window.location.href.indexOf('?') + 1).split('&');
+        for ( var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
         }
-    });
+        return vars;
+    },
+    getUrlVar : function(name) {
+        return $.getUrlVars()[name];
+    }
+});
 
-    var DEFAULT_BOARD_SIZE = 8;
+var DEFAULT_BOARD_SIZE = 8;
+var piecesAdded = false;
 
     //data model
     var board;
     var rules;
-    var whoseTurn = "black";	
+    var whoseTurn = "Black";	
 
     var directionOf = function(color) {
-      if (color == "black") {
+      if (color == "Black") {
         return -1;
-      }
-      return 1;
     }
+    return 1;
+}
 
     // Fill in this function to toggle the display for whose turn
     // The color parameter should be either "black" or "red"
     var toggleTurn = function(color) {
-	// Your code here
+        var turn=$("#Turn");
+        if(color=='Black'){
+            whoseTurn='Red';
+        }
+        else{
+            whoseTurn='Black'      
+        }
+        $(turn).html(whoseTurn+" Turn");
     }
 
 
@@ -75,21 +83,18 @@
         }
 
 
-	rules = new Rules(board);
+        rules = new Rules(board);
 
     //Start making the board here!
         var canvas = document.getElementById('canvas'); //Have the canvas from the HTML
         var context = canvas.getContext('2d');
         var gridSize = board.size(); //The number of squares in the grid
-        console.log("This is the gridSize: ", gridSize)
         var squareSize = 400/gridSize; //Compute the size of each square
         var x = 0;
         var y = 0;
 
         for(var i=0; i<gridSize; i= i+1){
-            console.log("This is time #: ", i);
             y = i * squareSize;
-            console.log("Y:", y)
             //object way of doing this. Going to use a table format.
             var row = document.createElement("tr");
             $(row).css('width', "400px");
@@ -115,6 +120,47 @@
             }
             $('#grid').append(row);
         }
+        //element.innerHTML
+
+        var addAllCheckers = function(board){
+            var allCheckers = board.getAllCheckers();
+            console.log(allCheckers);
+            for (var i =0; i < allCheckers.length; i++) {
+                var checker = allCheckers[i];//gets one checker
+                console.log(checker.toString());
+                var rows = $("#grid").children().children();
+                console.log("This is a piece: ", rows[checker.row].children[checker.col]);
+                $(rows[checker.row].children[checker.col]).append(whichPiece(checker)); 
+            };
+        }
+
+        var whichPiece=function(piece){
+            var img=document.createElement('img');
+            
+            if (piece.color=='red'){
+                if(piece.isKing){
+                    $(img).attr('src','graphics/red-king.png');
+                }
+                else{
+                    $(img).attr('src','graphics/red-piece.png');
+                }              
+                
+            }
+            else{
+                if(piece.isKing){
+                    $(img).attr('src','graphics/black-king.png');
+                }
+                else{
+                    $(img).attr('src','graphics/black-piece.png');
+            }
+            }
+            $(img).css('width', squareSize*.75);
+            $(img).css('height', squareSize*.75);
+            $(img).css('position', "relative")
+            $(img).addClass('checkerPiece');
+            return img
+        };  
+        
 
      	// Your code here
 
@@ -122,7 +168,7 @@
     		// Your code here
     	},true);
 
-    	board.addEventListener('move',function (e) {
+        board.addEventListener('move',function (e) {
     		// Your code here
     	},true);
 
@@ -137,6 +183,7 @@
         
         $("#btnNewGame").click(function(evt) {
             board.prepareNewGame();
+            addAllCheckers(board);
         });
 
         $("#btnAutoMove").click(function(evt) {
@@ -145,37 +192,36 @@
           var result = rules.makeRandomMove(playerColor, playerDirection);
           if (result != null) {
             toggleTurn();
-          }
-        });
+        }
+    });
 
         board.prepareNewGame();
-
     });
 </script>
-
-
 </head>
 
 <body>
 
-<table id="mainTable">
-    <tr>
-        <td id="navigation">
-          <table>
-			  <tr><td>		<!-- Your code here -->			</td></tr>
-              <tr><td><input id="btnNewGame" type="button" name="new" value="New Game"/></td></tr>
-              <tr><td><input id="btnAutoMove" type="button" name="new" value="Auto Move"/></td></tr>
+    <table id="mainTable">
+        <tr>
+            <td id="navigation">
+              <table>
+               <tr><td id = "turnColor" class = "blackTurn"> Black's Turn</td></tr>
+               <tr><td><input id="btnNewGame" type="button" name="new" value="New Game"/></td></tr>
+               <tr><td><input id="btnAutoMove" type="button" name="new" value="Auto Move"/></td></tr>
 
-            </table>
-        </td>
+           </table>
+       </td>
 
-        <td id="content" width = "400px" height ="400px">
-            <!-- Board -->  
-            <canvas id="canvas" width = "400px" height ="400px"> </canvas>
-        </td>
-    </tr>
+       <td id="content" width = "400px" height ="400px">
+        <!-- Board -->  
+        <canvas id="canvas" width = "400px" height ="400px"> </canvas>
+        <table id="grid" width = "400px" height= "400px">
+        </table>
+    </td>
+</tr>
 
-   </table>
+</table>
 
 </body>
 
