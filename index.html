@@ -123,8 +123,11 @@ var piecesAdded = false;
             }
             $('#grid').append(row);
         }
-        //element.innerHTML
 
+        /* This method is used to add all the pieces to the board 
+        * 
+        * NOTE!!!! Do not use anymore. Moved logic to the actionListener
+        */
         var addAllCheckers = function(board){
             var allCheckers = board.getAllCheckers();
             console.log(allCheckers);
@@ -154,12 +157,12 @@ var piecesAdded = false;
                 }
                 else{
                     $(img).attr('src','graphics/black-piece.png');
-            }
+                }
             }
             $(img).css('width', squareSize*.75);//leave this styling here so to use the SquareSize value
             $(img).css('height', squareSize*.75);
             $(img).css('position', "relative")
-            $(img).addClass('checkerPiece');
+            $(img).addClass('checkerPiece');//add other css settings from class
             return img
         };  
         
@@ -168,6 +171,13 @@ var piecesAdded = false;
 
         board.addEventListener('add',function (e) {
     		// Your code here
+            // e is hash map of checker, row, col
+            console.log("Called add function!") 
+            var checkerInfo = e.details
+            console.log("This is the checker, ", checker);
+            var rows = $("#grid").children().children();
+            $(rows[checkerInfo.row].children[checkerInfo.col]).append(whichPiece(checkerInfo.checker)); 
+            
     	},true);
 
         board.addEventListener('move',function (e) {
@@ -189,7 +199,7 @@ var piecesAdded = false;
             $("#grid").children().children().children().children().remove();
             console.log("Removed everything")
             board.prepareNewGame();
-            addAllCheckers(board);
+            //addAllCheckers(board);
         });
 
 
