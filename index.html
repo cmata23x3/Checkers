@@ -60,14 +60,17 @@ var piecesAdded = false;
     // Fill in this function to toggle the display for whose turn
     // The color parameter should be either "black" or "red"
     var toggleTurn = function(color) {
-        var turn=$("#Turn");
+        var turn=$("#turnColor");
+        //if one switch to the other
+        console.log("inside toggleTurn: ", color);
+        $(turn).toggleClass('redTurn');
         if(color=='Black'){
-            whoseTurn='Red';
+            whoseTurn = 'Red';
         }
         else{
             whoseTurn='Black'      
         }
-        $(turn).html(whoseTurn+" Turn");
+        $(turn).html(whoseTurn + "'s Turn");
     }
 
 
@@ -127,9 +130,9 @@ var piecesAdded = false;
             console.log(allCheckers);
             for (var i =0; i < allCheckers.length; i++) {
                 var checker = allCheckers[i];//gets one checker
-                console.log(checker.toString());
+           //     console.log(checker.toString());
                 var rows = $("#grid").children().children();
-                console.log("This is a piece: ", rows[checker.row].children[checker.col]);
+          //      console.log("This is a piece: ", rows[checker.row].children[checker.col]);
                 $(rows[checker.row].children[checker.col]).append(whichPiece(checker)); 
             };
         }
@@ -138,13 +141,12 @@ var piecesAdded = false;
             var img=document.createElement('img');
             
             if (piece.color=='red'){
-                if(piece.isKing){
+                if(piece.isKing){ //check if its a king so to add correct png
                     $(img).attr('src','graphics/red-king.png');
                 }
                 else{
                     $(img).attr('src','graphics/red-piece.png');
                 }              
-                
             }
             else{
                 if(piece.isKing){
@@ -154,7 +156,7 @@ var piecesAdded = false;
                     $(img).attr('src','graphics/black-piece.png');
             }
             }
-            $(img).css('width', squareSize*.75);
+            $(img).css('width', squareSize*.75);//leave this styling here so to use the SquareSize value
             $(img).css('height', squareSize*.75);
             $(img).css('position', "relative")
             $(img).addClass('checkerPiece');
@@ -182,8 +184,19 @@ var piecesAdded = false;
 
         
         $("#btnNewGame").click(function(evt) {
+            whoseTurn = "Black" //reset the starter
+            //remove pieces from the board. 
+            $("#grid").children().children().children().children().remove();
+            console.log("Removed everything")
             board.prepareNewGame();
             addAllCheckers(board);
+        });
+
+
+        //temporary!!!!!
+        $("#flipper").click(function(evt) {
+            console.log("Hit flipper");
+            toggleTurn(whoseTurn);
         });
 
         $("#btnAutoMove").click(function(evt) {
@@ -191,7 +204,7 @@ var piecesAdded = false;
           var playerDirection = directionOf(playerColor);
           var result = rules.makeRandomMove(playerColor, playerDirection);
           if (result != null) {
-            toggleTurn();
+            toggleTurn(whoseTurn);
         }
     });
 
@@ -207,6 +220,7 @@ var piecesAdded = false;
             <td id="navigation">
               <table>
                <tr><td id = "turnColor" class = "blackTurn"> Black's Turn</td></tr>
+               <tr><td><input id ="flipper" type="button" value="Flip"/></td></tr>
                <tr><td><input id="btnNewGame" type="button" name="new" value="New Game"/></td></tr>
                <tr><td><input id="btnAutoMove" type="button" name="new" value="Auto Move"/></td></tr>
 
