@@ -51,11 +51,11 @@ var piecesAdded = false;
     var whoseTurn = "Black";	
 
     var directionOf = function(color) {
-      if (color == "Black") {
-        return -1;
+        if (color == "Black") {
+            return -1;
+        }
+        return 1;
     }
-    return 1;
-}
 
     // Fill in this function to toggle the display for whose turn
     // The color parameter should be either "black" or "red"
@@ -128,7 +128,7 @@ var piecesAdded = false;
         * 
         * NOTE!!!! Do not use anymore. Moved logic to the actionListener
         */
-        var addAllCheckers = function(board){
+        var addAllCheckers = function(){
             var allCheckers = board.getAllCheckers();
             console.log(allCheckers);
             for (var i =0; i < allCheckers.length; i++) {
@@ -167,7 +167,10 @@ var piecesAdded = false;
         };  
         
 
-     	// Your code here
+     	/* Method is called by the board when initialized 
+        * to add the pieces correctly. 
+        *
+        */
 
         board.addEventListener('add',function (e) {
     		// Your code here
@@ -182,14 +185,34 @@ var piecesAdded = false;
 
         board.addEventListener('move',function (e) {
     		// Your code here
+            //e is details = {checker:checker, toRow:toRow, toCol:toCol, fromRow:checker.row, fromCol:checker.col};
+            console.log("Move function called!!!");
+            var checkerInfo = e.details;
+            var rows = $("#grid").children().children();
+            //remove old piece & draw new piece
+            $(rows[checkerInfo.fromRow].children[checkerInfo.fromCol]).children().remove();
+            $(rows[checkerInfo.toRow].children[checkerInfo.toCol]).append(whichPiece(checkerInfo.checker)); 
     	},true);
 
         board.addEventListener('remove', function(e) {
         	// Your code here
+            console.log("Remove function called");
+            var checkerInfo = e;
+            var rows = $("#grid").children().children();
+            //remove the piece
+            $(rows[checkerInfo.row].children[checkerInfo.col]).children().remove();
         }, true);
 
         board.addEventListener('promote',function (e) {
     		// Your code here
+            //e is a checker
+            console.log("Promote function called!");
+            var checkerInfo = e;
+            var rows = $("#grid").children().children();
+            //remove the piece
+            $(rows[checkerInfo.row].children[checkerInfo.col]).children().remove();
+            //add new piece
+            $(rows[checkerInfo.row].children[checkerInfo.col]).append(whichPiece(checkerInfo.checker)); 
     	},true);
 
         
@@ -230,7 +253,7 @@ var piecesAdded = false;
             <td id="navigation">
               <table>
                <tr><td id = "turnColor" class = "blackTurn"> Black's Turn</td></tr>
-               <tr><td><input id ="flipper" type="button" value="Flip"/></td></tr>
+            <!--   <tr><td><input id ="flipper" type="button" value="Flip"/></td></tr> -->
                <tr><td><input id="btnNewGame" type="button" name="new" value="New Game"/></td></tr>
                <tr><td><input id="btnAutoMove" type="button" name="new" value="Auto Move"/></td></tr>
 
