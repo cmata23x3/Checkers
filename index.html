@@ -60,16 +60,18 @@ var piecesAdded = false;
     // Fill in this function to toggle the display for whose turn
     // The color parameter should be either "black" or "red"
     var toggleTurn = function(color) {
-        var turn=$("#turnColor");
         //if one switch to the other
-        console.log("inside toggleTurn: ", color);
-        $(turn).toggleClass('redTurn');
+        console.log("pre change: inside toggleTurn: ", color);
+     //   $(turn).toggleClass('blackTurn');
         if(color=='black'){
-            whoseTurn ='red';
+            whoseTurn='red';
         }
         else{
             whoseTurn='black';     
         }
+        var turn=$("#turnColor");
+        $(turn).toggleClass('redTurn');
+        console.log("post change: inside toggleTurn: ", color);
         $(turn).html(whoseTurn + "'s turn");
     }
 
@@ -261,17 +263,17 @@ var piecesAdded = false;
 
 
         //temporary!!!!!
-        $("#flipper").click(function(evt) {
-            console.log("Hit flipper");
-            toggleTurn(whoseTurn);
-        });
+        // $("#flipper").click(function(evt) {
+        //     console.log("Hit flipper");
+        //     toggleTurn(whoseTurn);
+        // });
 
         $("#btnAutoMove").click(function(evt) {
           var playerColor = whoseTurn;
           var playerDirection = directionOf(playerColor);
           var result = rules.makeRandomMove(playerColor, playerDirection);
           if (result != null) {
-            toggleTurn(whoseTurn);
+       //     toggleTurn(whoseTurn);
         }
     });
 
@@ -287,7 +289,7 @@ var piecesAdded = false;
             <td id="navigation">
               <table>
                <tr><td id = "turnColor" class = "blackTurn"> black's turn</td></tr>
-            <<tr><td><input id ="flipper" type="button" value="Flip"/></td></tr> 
+            <!--<tr><td><input id ="flipper" type="button" value="Flip"/></td></tr> -->
                <tr><td><input id="btnNewGame" type="button" name="new" value="New Game"/></td></tr>
                <tr><td><input id="btnAutoMove" type="button" name="new" value="Auto Move"/></td></tr>
 
