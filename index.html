@@ -61,7 +61,7 @@ var piecesAdded = false;
     // The color parameter should be either "black" or "red"
     var toggleTurn = function(color) {
         //if one switch to the other
-        console.log("pre change: inside toggleTurn: ", color);
+    //    console.log("pre change: inside toggleTurn: ", color);
      //   $(turn).toggleClass('blackTurn');
         if(color=='black'){
             whoseTurn='red';
@@ -71,7 +71,7 @@ var piecesAdded = false;
         }
         var turn=$("#turnColor");
         $(turn).toggleClass('redTurn');
-        console.log("post change: inside toggleTurn: ", color);
+  //      console.log("post change: inside toggleTurn: ", color);
         $(turn).html(whoseTurn + "'s turn");
     }
 
@@ -161,8 +161,8 @@ var piecesAdded = false;
                     $(img).attr('src','graphics/black-piece.png');
                 }
             }
-            $(img).css('width', squareSize*.75);//leave this styling here so to use the SquareSize value
-            $(img).css('height', squareSize*.75);
+            $(img).css('width', squareSize*.70);//leave this styling here so to use the SquareSize value
+            $(img).css('height', squareSize*.70);
             $(img).css('position', "relative")
             $(img).addClass('checkerPiece');//add other css settings from class
             return img
@@ -207,9 +207,9 @@ var piecesAdded = false;
         board.addEventListener('add',function (e) {
     		// Your code here
             // e is hash map of checker, row, col
-            console.log("Called add function!") 
+            //console.log("Called add function!") 
             var checkerInfo = e.details
-            console.log("This is the checker, ", checker);
+            //console.log("This is the checker, ", checker);
             var rows = $("#grid").children().children();
             $(rows[checkerInfo.row].children[checkerInfo.col]).append(whichPiece(checkerInfo.checker)); 
             
@@ -219,20 +219,20 @@ var piecesAdded = false;
     		// Your code here
             //e is details = {checker:checker, toRow:toRow, toCol:toCol, fromRow:checker.row, fromCol:checker.col};
 
-            console.log("Move function called!!!");
+        //    console.log("Move function called!!!");
             var checkerInfo = e.details;
             var rows = $("#grid").children().children();
             //remove old piece & draw new piece
             $(rows[checkerInfo.fromRow].children[checkerInfo.fromCol]).children().remove();
             $(rows[checkerInfo.toRow].children[checkerInfo.toCol]).append(whichPiece(checkerInfo.checker)); 
-            console.log("Should be toggling");
+        //    console.log("Should be toggling");
             toggleTurn(whoseTurn);
         //    addArrow(checkerInfo.toRow, checkerInfo.toCol, checkerInfo.fromRow, checkerInfo.fromCol);
     	},true);
 
         board.addEventListener('remove', function(e) {
         	// Your code here
-            console.log("Remove function called");
+        //    console.log("Remove function called");
             var checkerInfo = e.details;
             var rows = $("#grid").children().children();
             //remove the piece
@@ -242,7 +242,7 @@ var piecesAdded = false;
         board.addEventListener('promote',function (e) {
     		// Your code here
             //e is a checker
-            console.log("Promote function called!");
+         //   console.log("Promote function called!");
             var checkerInfo = e.details;
             //var rows = $("#grid").children().children();
             //remove the piece
