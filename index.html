@@ -48,10 +48,10 @@ var piecesAdded = false;
     //data model
     var board;
     var rules;
-    var whoseTurn = "Black";	
+    var whoseTurn = 'black';	
 
     var directionOf = function(color) {
-        if (color == "Black") {
+        if (color == 'black') {
             return -1;
         }
         return 1;
@@ -64,13 +64,13 @@ var piecesAdded = false;
         //if one switch to the other
         console.log("inside toggleTurn: ", color);
         $(turn).toggleClass('redTurn');
-        if(color=='Black'){
-            whoseTurn = 'Red';
+        if(color=='black'){
+            whoseTurn ='red';
         }
         else{
-            whoseTurn='Black'      
+            whoseTurn='black';     
         }
-        $(turn).html(whoseTurn + "'s Turn");
+        $(turn).html(whoseTurn + "'s turn");
     }
 
 
@@ -165,13 +165,43 @@ var piecesAdded = false;
             $(img).addClass('checkerPiece');//add other css settings from class
             return img
         };  
-        
+
+        /* Method is used to overlay the move arrow onto the board.
+        * Interacts with the canvas called arrow. 
+        */
+        var addArrow = function(toRow, toCol, fromRow, fromCol){
+            console.log("Called get arrow!!!");
+            var canv = document.getElementById('arrow'); //Have the canvas from the HTML
+            console.log("Got the canvas", canv);
+            var contxt = canv.getContext('2d');
+            console.log("Got the context", context);
+            contxt.clearRect(0, 0, canv.width, canv.height);
+            contxt.strokeStyle = "Yellow";
+
+            // Rotate the context to point along the path
+            var dx = (toRow-fromCol)*squareSize, dy=(toCol-fromCol)*squareSize, len=Math.sqrt(dx*dx+dy*dy);
+            contxt.translate(toRow,toCol);
+            contxt.rotate(Math.atan2(dy,dx));
+            // line
+            contxt.lineCap = 'round';
+            contxt.beginPath();
+            contxt.moveTo(0,0);
+            contxt.lineTo(-len,0);
+            contxt.closePath();
+            contxt.stroke();
+            // arrowhead
+            contxt.beginPath();
+            contxt.moveTo(0,0);
+            contxt.lineTo(-size,-size);
+            contxt.lineTo(-size, size);
+            contxt.closePath();
+            contxt.fill();
+        }
 
      	/* Method is called by the board when initialized 
         * to add the pieces correctly. 
         *
         */
-
         board.addEventListener('add',function (e) {
     		// Your code here
             // e is hash map of checker, row, col
@@ -186,18 +216,22 @@ var piecesAdded = false;
         board.addEventListener('move',function (e) {
     		// Your code here
             //e is details = {checker:checker, toRow:toRow, toCol:toCol, fromRow:checker.row, fromCol:checker.col};
+
             console.log("Move function called!!!");
             var checkerInfo = e.details;
             var rows = $("#grid").children().children();
             //remove old piece & draw new piece
             $(rows[checkerInfo.fromRow].children[checkerInfo.fromCol]).children().remove();
             $(rows[checkerInfo.toRow].children[checkerInfo.toCol]).append(whichPiece(checkerInfo.checker)); 
+            console.log("Should be toggling");
+            toggleTurn(whoseTurn);
+        //    addArrow(checkerInfo.toRow, checkerInfo.toCol, checkerInfo.fromRow, checkerInfo.fromCol);
     	},true);
 
         board.addEventListener('remove', function(e) {
         	// Your code here
             console.log("Remove function called");
-            var checkerInfo = e;
+            var checkerInfo = e.details;
             var rows = $("#grid").children().children();
             //remove the piece
             $(rows[checkerInfo.row].children[checkerInfo.col]).children().remove();
@@ -207,17 +241,17 @@ var piecesAdded = false;
     		// Your code here
             //e is a checker
             console.log("Promote function called!");
-            var checkerInfo = e;
-            var rows = $("#grid").children().children();
+            var checkerInfo = e.details;
+            //var rows = $("#grid").children().children();
             //remove the piece
-            $(rows[checkerInfo.row].children[checkerInfo.col]).children().remove();
+            //$(rows[checkerInfo.row].children[checkerInfo.col]).children().remove();
             //add new piece
-            $(rows[checkerInfo.row].children[checkerInfo.col]).append(whichPiece(checkerInfo.checker)); 
+            //$(rows[checkerInfo.row].children[checkerInfo.col]).append(whichPiece(checkerInfo.checker)); 
     	},true);
 
         
         $("#btnNewGame").click(function(evt) {
-            whoseTurn = "Black" //reset the starter
+            whoseTurn = "black" //reset the starter
             //remove pieces from the board. 
             $("#grid").children().children().children().children().remove();
             console.log("Removed everything")
@@ -252,8 +286,8 @@ var piecesAdded = false;
         <tr>
             <td id="navigation">
               <table>
-               <tr><td id = "turnColor" class = "blackTurn"> Black's Turn</td></tr>
-            <!--   <tr><td><input id ="flipper" type="button" value="Flip"/></td></tr> -->
+               <tr><td id = "turnColor" class = "blackTurn"> black's turn</td></tr>
+            <<tr><td><input id ="flipper" type="button" value="Flip"/></td></tr> 
                <tr><td><input id="btnNewGame" type="button" name="new" value="New Game"/></td></tr>
                <tr><td><input id="btnAutoMove" type="button" name="new" value="Auto Move"/></td></tr>
 
@@ -265,6 +299,7 @@ var piecesAdded = false;
         <canvas id="canvas" width = "400px" height ="400px"> </canvas>
         <table id="grid" width = "400px" height= "400px">
         </table>
+        <canvas id="arrow" width = "400px" height = "400px"> </canvas>
     </td>
 </tr>
 

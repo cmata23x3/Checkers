@@ -16,6 +16,12 @@
 	left:155px;
 }
 
+#arrow{
+	position: absolute;
+	top: 10px;
+	left: 155px;
+}
+
 #content{
 	background-color:gray;
 	height:350px;
