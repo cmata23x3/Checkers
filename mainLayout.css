@@ -1,4 +1,4 @@
-﻿#navigation{
+#navigation{
 	width:140px
 }
 
@@ -14,12 +14,16 @@
 	position: absolute;
 	top: 10px;
 	left:155px;
+	padding:0px;
+    vertical-align: bottom;
 }
 
 #arrow{
 	position: absolute;
 	top: 10px;
 	left: 155px;
+	padding: 0px;
+	vertical-align: bottom;
 }
 
 #content{
@@ -49,4 +53,7 @@
 	display: block;
 	margin-right: auto;
 	margin-left: auto;
+}
+#canvas{
+	vertical-align: bottom;
 }
