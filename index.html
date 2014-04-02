@@ -331,7 +331,7 @@ var piecesAdded = false;
             redoQueue[redoCount]=reverse;
             console.log("Added reverse to redoQueue!");
             console.log("This is reverse, ", reverse);
-            redoCount=redoCount++;
+            redoCount=redoCount + 1;
 
             //make redo enabled
             $("#btnRedo").removeAttr("disabled");
@@ -353,14 +353,13 @@ var piecesAdded = false;
 
         $("#btnRedo").click(function(evt){
             //decrement redoCount & get piece
-            
-            var reverse=redoQueue[redoCount-1];
+            console.log(redoQueue);
+            redoCount=redoCount-1;
+            var reverse=redoQueue[redoCount];
             console.log(reverse);
             //get the chekcer instance
             var checker = board.getCheckerAt(reverse.from_row,reverse.from_col);
-
             var newChecker = {checker:checker, toRow:reverse.to_row, toCol:reverse.to_col, fromRow:checker.row, fromCol:checker.col};
-            redoCount=redoCount-1;
             //update undocount
             undoCount=undoCount+1;
             
