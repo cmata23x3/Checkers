@@ -16,6 +16,7 @@
 
     <!-- Load any supplemental Javascript libraries here -->
     <script type="text/javascript" src="external_js/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="external_js/jquery-ui-1.10.4.custom.min.js"></script>
     <script type="text/javascript" src="checker.js"></script>
     <script type="text/javascript" src="boardEvent.js"></script>
     <script type="text/javascript" src="board.js"></script>
@@ -175,6 +176,7 @@ var piecesAdded = false;
             $(img).css('width', squareSize*.85);//leave this styling here so to use the SquareSize value
             $(img).css('height', squareSize*.85);
             $(img).addClass('checkerPiece');//add other css settings from class
+            $(img).draggable( {zIndex:100} );
             return img
         };  
 
@@ -387,6 +389,7 @@ var piecesAdded = false;
             //remove pieces from the board. 
             $("#grid").children().children().children().children().remove();
             console.log("Removed everything")
+            //remove the arrow from the board
             var arrow =document.getElementById('arrow');
             var aCtxt=arrow.getContext('2d');
             //clear the previous arrow before continuing
@@ -425,13 +428,11 @@ var piecesAdded = false;
        //     toggleTurn(whoseTurn);
         }
     });
+        $("#btnRedo").attr("disabled","disabled");
+        $("#btnUndo").attr("disabled","disabled");
 
         board.prepareNewGame();
     });
-
-
-
-
 </script>
 </head>
 
@@ -452,15 +453,16 @@ var piecesAdded = false;
 
        <td id="content" width = "400px" height ="400px">
         <!-- Board -->  
-        <canvas id="canvas" width = "400px" height ="400px"> </canvas>
+        <canvas id="canvas" width = "400px" height ="400px">  
+        </canvas>
         <table id="grid" width = "400px" height= "400px"  >
         </table>
-        <canvas id="arrow" width = "400px" height = "400px"> </canvas>
+        <canvas id="arrow" width = "400px" height = "400px">
+         </canvas>
     </td>
 </tr>
 
 </table>
-
 </body>
 
 </html>

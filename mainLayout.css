@@ -14,7 +14,7 @@
 	position:absolute;
 	margin-top:-401px;
 	margin-left:-1px;
-	padding:0px;-
+	padding:0px;
 }
 
 #arrow{
@@ -61,3 +61,9 @@
 	margin-right: auto;
 	margin-left: auto;
 }
+
+#draggable {
+    width: 150px;
+    height: 150px;
+    background: #ccc;
+  }
