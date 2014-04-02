@@ -51,6 +51,13 @@ var piecesAdded = false;
     var rules;
     var whoseTurn = 'black';	
 
+
+    //global vars for undo & redo
+    var undoQueue=[];
+    var undoCount=0;
+    var redoQueue=[];
+    var redoCount=0;
+
     var directionOf = function(color) {
         if (color == 'black') {
             return -1;
@@ -113,9 +120,6 @@ var piecesAdded = false;
                 var cell2 = document.createElement("td");
                 $(cell).css('width', squareSize-2);
                 $(cell2).css('width', squareSize-2);
-                $(cell).css('padding', '0px');
-                $(cell2).css('padding', '0px');
-
                 if(i%2 == 0){
                     x = j * squareSize;  
                 }
@@ -124,6 +128,8 @@ var piecesAdded = false;
                 }   
                 context.fillStyle = "rgb(256,256,256)";
                 context.fillRect(x,y,squareSize,squareSize);
+                $(cell).addClass("tdstyle");
+                $(cell2).addClass("tdstyle");
                 row.appendChild(cell);
                 row.appendChild(cell2);
             }
@@ -147,10 +153,11 @@ var piecesAdded = false;
         }
 
         var whichPiece=function(piece){
+            var checker = piece; 
             var img=document.createElement('img');
             
-            if (piece.color=='red'){
-                if(piece.isKing){ //check if its a king so to add correct png
+            if (checker.color=='red'){
+                if(checker.isKing){ //check if its a king so to add correct png
                     $(img).attr('src','graphics/red-king.png');
                 }
                 else{
@@ -158,16 +165,15 @@ var piecesAdded = false;
                 }              
             }
             else{
-                if(piece.isKing){
+                if(checker.isKing){
                     $(img).attr('src','graphics/black-king.png');
                 }
                 else{
                     $(img).attr('src','graphics/black-piece.png');
                 }
             }
-            $(img).css('width', squareSize*.70);//leave this styling here so to use the SquareSize value
-            $(img).css('height', squareSize*.70);
-            $(img).css('position', "relative")
+            $(img).css('width', squareSize*.85);//leave this styling here so to use the SquareSize value
+            $(img).css('height', squareSize*.85);
             $(img).addClass('checkerPiece');//add other css settings from class
             return img
         };  
@@ -267,7 +273,7 @@ var piecesAdded = false;
     		// Your code here
             // e is hash map of checker, row, col
             //console.log("Called add function!") 
-            var checkerInfo = e.details
+            var checkerInfo = e.details;
             //console.log("This is the checker, ", checker);
             var rows = $("#grid").children().children();
             $(rows[checkerInfo.row].children[checkerInfo.col]).append(whichPiece(checkerInfo.checker)); 
@@ -311,12 +317,88 @@ var piecesAdded = false;
             //$(rows[checkerInfo.row].children[checkerInfo.col]).append(whichPiece(checkerInfo.checker)); 
     	},true);
 
+        $("#btnUndo").click(function(evt){
+            //decrement undocount
+            undoCount=undoCount-1;
+            //get most recent move
+            var reverse=undoQueue[undoCount];
+            //get the checker instance
+            var checker = board.getCheckerAt(reverse.to_row,reverse.to_col);
+
+            //make new var with checker info
+            var newChecker = {checker:checker, toRow:reverse.from_row, toCol:reverse.from_col, fromRow:checker.row, fromCol:checker.col};
+            //Add to redo queue & increment count
+            redoQueue[redoCount]=reverse;
+            console.log("Added reverse to redoQueue!");
+            console.log("This is reverse, ", reverse);
+            redoCount=redoCount++;
+
+            //make redo enabled
+            $("#btnRedo").removeAttr("disabled");
+            //if no more things in undo queue, disable 
+            if (undoCount===0){
+                $("#btnUndo").attr("disabled","disabled");          
+            }
+            //Check if it was a king and undo
+            if(reverse.made_king){
+                checker.isKing=false;
+            }
+
+            for(var i=0; i<reverse.remove.length; i++){
+                var check = reverse.remove[i]
+                board.add(check,check.row,check.col);
+            }
+            board.moveTo(checker,reverse.from_row,reverse.from_col);
+        });
+
+        $("#btnRedo").click(function(evt){
+            //decrement redoCount & get piece
+            
+            var reverse=redoQueue[redoCount-1];
+            console.log(reverse);
+            //get the chekcer instance
+            var checker = board.getCheckerAt(reverse.from_row,reverse.from_col);
+
+            var newChecker = {checker:checker, toRow:reverse.to_row, toCol:reverse.to_col, fromRow:checker.row, fromCol:checker.col};
+            redoCount=redoCount-1;
+            //update undocount
+            undoCount=undoCount+1;
+            
+            //make undo enabled
+            $("#btnUndo").removeAttr("disabled");
+            //check if redo should be enabled
+            if (redoCount==0){
+                $("#btnRedo").attr("disabled","disabled");          
+            }
+            //check for the case of the king
+            if(reverse.made_king){
+                checker.isKing=true;
+            }
+            for(var x=0; x<reverse.remove.length;x++){
+                var check = reverse.remove[x]
+                board.removeAt(check.row,check.col);
+            }
+            board.moveTo(checker,reverse.to_row,reverse.to_col);
+        });
+
+
         
         $("#btnNewGame").click(function(evt) {
             whoseTurn = "black" //reset the starter
             //remove pieces from the board. 
             $("#grid").children().children().children().children().remove();
             console.log("Removed everything")
+            var arrow =document.getElementById('arrow');
+            var aCtxt=arrow.getContext('2d');
+            //clear the previous arrow before continuing
+            aCtxt.clearRect(0,0,arrow.width,arrow.height);
+            //reset the queues & counters
+            undoQueue=[];
+            undoCount=0;
+            redoQueue=[];
+            redoCount=0;
+            $("#btnRedo").attr("disabled","disabled");
+            $("#btnUndo").attr("disabled","disabled");
             board.prepareNewGame();
             //addAllCheckers(board);
         });
@@ -332,6 +414,14 @@ var piecesAdded = false;
           var playerColor = whoseTurn;
           var playerDirection = directionOf(playerColor);
           var result = rules.makeRandomMove(playerColor, playerDirection);
+          undoQueue[undoCount]=result;
+          undoCount=undoCount+1;
+          //when a move is made, reset counter b/c we're moving on
+          redoCount=0;
+          //Enable undo button
+          $("#btnUndo").removeAttr("disabled");
+          //disable redo
+          $("#btnRedo").attr("disabled","disabled");
           if (result != null) {
        //     toggleTurn(whoseTurn);
         }
@@ -339,6 +429,10 @@ var piecesAdded = false;
 
         board.prepareNewGame();
     });
+
+
+
+
 </script>
 </head>
 
@@ -352,7 +446,8 @@ var piecesAdded = false;
             <!--<tr><td><input id ="flipper" type="button" value="Flip"/></td></tr> -->
                <tr><td><input id="btnNewGame" type="button" name="new" value="New Game"/></td></tr>
                <tr><td><input id="btnAutoMove" type="button" name="new" value="Auto Move"/></td></tr>
-
+               <tr><td><input id="btnUndo" type="button" name="new" value="Undo" disabled="disabled"/></td></tr>
+               <tr><td><input id="btnRedo" type="button" name="new" value="Redo" disabled="disabled"/></td></tr>
            </table>
        </td>
 

@@ -11,40 +11,47 @@
 }
 
 #grid{
-	position: absolute;
-	top: 10px;
-	left:155px;
-	padding:0px;
-    vertical-align: bottom;
+	position:absolute;
+	margin-top:-401px;
+	margin-left:-1px;
+	padding:0px;-
 }
 
 #arrow{
-	position: absolute;
-	top: 10px;
-	left: 155px;
-	padding: 0px;
+	margin-top:-400px;
+	padding:0;
+	position:absolute;
+	pointer-events:none;
+}
+
+#canvas{
 	vertical-align: bottom;
+	position:relative;
+	display: block;
 }
 
 #content{
 	background-color:gray;
 	height:350px;
 	position:relative;
-	padding: 0px;
 	border: solid;
 	border-width: 1px;
 }
 
+.tdstyle{
+	padding:0px;	
+}
+
 .blackTurn{
-	background-color: white;
-	color: black;
+	background-color: black;
+	color: white;
 	font-weight: bold;
 	text-align: center;
 }
 
 .redTurn{
-	background-color: white;
-	color: red;
+	background-color: red;
+	color: white;
 	font-weight: bold;
 	text-align: center;
 }
@@ -53,7 +60,4 @@
 	display: block;
 	margin-right: auto;
 	margin-left: auto;
-}
-#canvas{
-	vertical-align: bottom;
 }
